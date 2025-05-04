@@ -51,6 +51,14 @@ export function RegisterForm() {
             return
         }
 
+        if (!companyNIP) {
+            setError("Proszę wprowadzić NIP firmy")
+            setActiveTab("company")
+            setIsLoading(false)
+            return
+        }
+
+
         if (!acceptTerms) {
             setError("Musisz zaakceptować regulamin")
             setIsLoading(false)
@@ -58,6 +66,27 @@ export function RegisterForm() {
         }
 
         try {
+            const response = await fetch("https://localhost:50787/register", {
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password,
+                    companyName,
+                    companyAddress,
+                    companyNIP,
+                }), method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            if (response.ok) {
+
+                console.log("Success!")
+                return
+            } else {
+                const result = await response.json()
+                setError(result.message || "Wystąpił błąd.")
+            }
             return;
         } catch (err) {
             setError("Wystąpił błąd. Spróbuj ponownie.")
