@@ -26,7 +26,6 @@ export default function AuthLayout({
               : 'Załóż konto właściciela i profil firmy'}
           </p>
         </div>
-
         <div className="p-6">
           {children}
           <div className="text-center mt-4">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +17,6 @@ export enum RegisterFormTabs {
 
 const initalState: FormActionState = {
   error: '',
-  activeTab: RegisterFormTabs.PERSONAL,
   data: {
     name: '',
     email: '',
@@ -28,6 +27,7 @@ const initalState: FormActionState = {
     companyNIP: '',
     terms: 'off',
   },
+  activeTab: RegisterFormTabs.PERSONAL,
 };
 
 export function RegisterForm() {
@@ -37,13 +37,21 @@ export function RegisterForm() {
   );
 
   const [activeTab, setActiveTab] = useState<RegisterFormTabs>(
-    RegisterFormTabs.PERSONAL
+    state.activeTab ?? RegisterFormTabs.PERSONAL
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     state.data = { ...state.data, [name]: value };
   };
+
+  useEffect(() => {
+    if (state.activeTab !== activeTab) {
+      setActiveTab(state.activeTab as RegisterFormTabs);
+    }
+
+    console.log(state.activeTab);
+  }, [state.activeTab]);
 
   return (
     <form action={action} className="space-y-4">
@@ -61,13 +69,13 @@ export function RegisterForm() {
       >
         <TabsList className="grid w-full grid-cols-2 h-9 bg-transparent">
           <TabsTrigger
-            value="personal"
+            value={RegisterFormTabs.PERSONAL}
             className="text-[#393637] data?-[state=active]:text-white data?-[state=active]:bg-[#393637] dark:data?-[state=active]:bg-[#393637]"
           >
             Osobowe
           </TabsTrigger>
           <TabsTrigger
-            value="company"
+            value={RegisterFormTabs.COMPANY}
             className="text-[#393637] data?-[state=active]:text-white data?-[state=active]:bg-[#393637] dark:data?-[state=active]:bg-[#393637]"
           >
             Firma

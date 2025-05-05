@@ -1,9 +1,11 @@
 'use server';
 
+import { RegisterFormTabs } from './register/register-form';
+
 export interface FormActionState {
   error: string;
-  activeTab?: 'personal' | 'company'; // zwaracamy taba w register formie jeżeli jest błąd w danym tabie
-  data?: Record<string, any>;
+  data: Record<string, any>;
+  activeTab?: RegisterFormTabs;
 }
 
 export async function loginAction(
@@ -43,17 +45,24 @@ export async function registerAction(
   formData: FormData
 ) {
   const userData = {
-    name: formData.get('name') as string,
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-    confirmPassword: formData.get('confirmPassword') as string,
+    name: prevState.data.name,
+    email: prevState.data.email,
+    password: prevState.data.password,
+    confirmPassword: prevState.data.confirmPassword,
     companyName: formData.get('companyName') as string,
     companyAddress: formData.get('companyAddress') as string,
     companyNIP: formData.get('companyNIP') as string,
-    terms: formData.get('terms') as string,
+    terms: formData.get('terms') === 'true',
   };
 
   console.log(userData);
+  if (prevState.data.password !== prevState.data.confirmPassword) {
+    return {
+      error: 'Hasła nie są zgodne.',
+      data: userData,
+      activeTab: RegisterFormTabs.PERSONAL,
+    };
+  }
 
   try {
     const response = await fetch('https://localhost:8000/register', {
@@ -79,5 +88,6 @@ export async function registerAction(
   }
   return {
     ...prevState,
+    data: userData,
   };
 }
