@@ -1,10 +1,14 @@
-import { ThemeSwitcher } from "@/components/theme-switcher";
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Home() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-24 dark:bg-[#393637]">
-      <ThemeSwitcher />
-      <p className="text-2xl">Hello world Saloonik!</p>
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push('/auth/login');
+  }, [router]);
+
+  return null;
 }

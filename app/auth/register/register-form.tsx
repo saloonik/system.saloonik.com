@@ -8,10 +8,16 @@ import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FormActionState, registerAction } from '../auth/actions';
+import { FormActionState, registerAction } from '../actions';
+
+export enum RegisterFormTabs {
+  PERSONAL = 'personal',
+  COMPANY = 'company',
+}
 
 const initalState: FormActionState = {
   error: '',
+  activeTab: RegisterFormTabs.PERSONAL,
   data: {
     name: '',
     email: '',
@@ -30,9 +36,14 @@ export function RegisterForm() {
     initalState
   );
 
-  const [activeTab, setActiveTab] = useState<'personal' | 'company'>(
-    'personal'
+  const [activeTab, setActiveTab] = useState<RegisterFormTabs>(
+    RegisterFormTabs.PERSONAL
   );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    state.data = { ...state.data, [name]: value };
+  };
 
   return (
     <form action={action} className="space-y-4">
@@ -45,7 +56,7 @@ export function RegisterForm() {
 
       <Tabs
         value={activeTab}
-        onValueChange={(value) => setActiveTab(value as 'personal' | 'company')}
+        onValueChange={(value) => setActiveTab(value as RegisterFormTabs)}
         className="w-full"
       >
         <TabsList className="grid w-full grid-cols-2 h-9 bg-transparent">
@@ -73,6 +84,7 @@ export function RegisterForm() {
               placeholder="Jan Kowalski"
               name="name"
               defaultValue={state.data?.name}
+              onChange={handleInputChange}
               className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
             />
           </div>
@@ -87,6 +99,7 @@ export function RegisterForm() {
               placeholder="ty@example.com"
               name="email"
               defaultValue={state.data?.email}
+              onChange={handleInputChange}
               className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
             />
           </div>
@@ -104,6 +117,7 @@ export function RegisterForm() {
               placeholder="*********"
               name="password"
               defaultValue={state.data?.password}
+              onChange={handleInputChange}
               className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
             />
           </div>
@@ -121,6 +135,7 @@ export function RegisterForm() {
               placeholder="*********"
               name="confirmPassword"
               defaultValue={state.data?.confirmPassword}
+              onChange={handleInputChange}
               className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
             />
           </div>
@@ -128,7 +143,7 @@ export function RegisterForm() {
           <Button
             type="button"
             className="w-full bg-[#393637] hover:bg-[#4a4748] text-white h-9 mt-2"
-            onClick={() => setActiveTab('company')}
+            onClick={() => setActiveTab(RegisterFormTabs.COMPANY)}
           >
             Dalej
           </Button>
@@ -144,6 +159,7 @@ export function RegisterForm() {
               placeholder="Acme Sp. z o.o."
               name="companyName"
               defaultValue={state.data?.companyName}
+              onChange={handleInputChange}
               className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
             />
           </div>
@@ -157,6 +173,7 @@ export function RegisterForm() {
               placeholder="ul. Biznesowa 12, Miasto"
               name="companyAddress"
               defaultValue={state.data?.companyAddress}
+              onChange={handleInputChange}
               className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
             />
           </div>
@@ -170,6 +187,7 @@ export function RegisterForm() {
               placeholder="PLXXXXXXXXX"
               name="companyNIP"
               defaultValue={state.data?.companyNIP}
+              onChange={handleInputChange}
               className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
             />
           </div>
@@ -178,7 +196,14 @@ export function RegisterForm() {
             <Checkbox
               id="terms"
               name="terms"
-              defaultValue={state.data?.terms}
+              value="on"
+              defaultChecked={state.data?.terms === 'on'}
+              onChange={(e) =>
+                (state.data = {
+                  ...state.data,
+                  terms: (e.target as HTMLInputElement).checked ? 'on' : 'off',
+                })
+              }
               className="ring-2 ring-[#393637]"
             />
             <label
@@ -194,7 +219,7 @@ export function RegisterForm() {
               type="button"
               variant="outline"
               className="flex-1 h-9 border-gray-300 text-text-[#393637] hover:bg-gray-50 dark:border-[#39363715] dark:hover:text-white dark:text-[#393637] dark:hover:bg-[#393637]"
-              onClick={() => setActiveTab('personal')}
+              onClick={() => setActiveTab(RegisterFormTabs.PERSONAL)}
             >
               Wstecz
             </Button>
