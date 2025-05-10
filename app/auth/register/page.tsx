@@ -35,7 +35,7 @@ export default function Register() {
       city: "",
       postalCode: "",
       country: "",
-      companyNIP: "",
+      nip: "",
       headquarters: "",
       regon: "",
       acceptTerms: false,

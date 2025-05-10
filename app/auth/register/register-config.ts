@@ -46,7 +46,7 @@ export const registerFormSchema = z
       .string()
       .min(2, "Kraj musi mieć co najmniej 2 znaki")
       .nonempty("Pole jest wymagane"),
-    companyNIP: z
+    nip: z
       .string()
       .regex(
         /^PL?[0-9]{10}$|^[0-9]{10}$/,
@@ -116,7 +116,7 @@ export const getCompanyFields = (
       control: form.control,
     },
     {
-      name: "companyNIP",
+      name: "nip",
       label: "NIP",
       placeholder: "PL1234567890",
       control: form.control,
