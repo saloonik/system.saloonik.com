@@ -87,16 +87,16 @@ export default function Register() {
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid h-9 w-full grid-cols-2 bg-transparent">
+          <TabsList className="grid h-9 w-full grid-cols-2 gap-3 bg-transparent">
             <TabsTrigger
               value="personal"
-              className="cursor-pointer text-[#393637] data-[state=active]:bg-[#393637] data-[state=active]:text-white dark:data-[state=active]:bg-[#393637]"
+              className="cursor-pointer text-[#393637] dark:text-white dark:border dark:border-[#393637] data-[state=active]:bg-[#393637] data-[state=active]:text-white dark:data-[state=active]:bg-[#393637]"
             >
               Osobowe
             </TabsTrigger>
             <TabsTrigger
               value="company"
-              className="cursor-pointer text-[#393637] data-[state=active]:bg-[#393637] data-[state=active]:text-white dark:data-[state=active]:bg-[#393637]"
+              className="cursor-pointer text-[#393637] dark:text-white dark:border dark:border-[#393637] data-[state=active]:bg-[#393637] data-[state=active]:text-white dark:data-[state=active]:bg-[#393637]"
             >
               Firma
             </TabsTrigger>
