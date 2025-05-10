@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
-import { usePathname } from "next/navigation";
-
+import { SaloonikLogo } from "../../components/ui/saloonik-logo";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export const LOGIN_PATH = "/auth/login";
 export const REGISTER_PATH = "/auth/register";
@@ -16,20 +16,20 @@ export default function AuthLayout({
   const path = usePathname();
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center dark:bg-[#393637]">
-      <div className="w-full max-w-md rounded-lg shadow-lg overflow-hidden bg-accent dark:bg-white">
-        <div className="p-5 w-full flex flex-col items-center">
-          <Image src={"/logo.svg"} width={150} height={150} alt="Saloonik" />
-          <p className="text-[#393637] text-sm mt-3">
+    <div className="flex min-h-screen w-full items-center justify-center">
+      <div className="bg-accent w-full max-w-md overflow-hidden rounded-lg shadow-lg">
+        <div className="flex w-full flex-col items-center p-5">
+          <SaloonikLogo />
+          <p className="mt-3 text-sm">
             {path === LOGIN_PATH
-              ? "Zaloguj się, aby uzyskać dostęp do systemu"
-              : "Załóż konto właściciela i profil firmy"}
+              ? "Zaloguj się, aby uzyskać dostęp do systemu."
+              : "Załóż konto właściciela i profil firmy."}
           </p>
         </div>
         <div className="p-6">
           {children}
-          <div className="text-center mt-4">
-            <button className="text-sm text-gray-600 hover:text-[#393637] dark:text-[#393637]">
+          <div className="mt-4 text-center">
+            <button className="] text-sm text-gray-600 dark:text-white">
               {path === LOGIN_PATH ? (
                 <Link href={REGISTER_PATH}>
                   Nie masz jeszcze konta?{" "}

@@ -1,276 +1,199 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import {
+  getCompanyFields,
+  getPersonalFields,
+  registerFormSchema,
+} from "./register-config";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Form } from "@/components/ui/form";
+import { CustomFormField } from "@/components/ui/form-field";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { api } from "@/lib/axios";
+import { AuthApiResponse } from "@/types/response";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Cookies from "js-cookie";
+import { CircleX } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 export default function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const form = useForm<z.infer<typeof registerFormSchema>>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      companyName: "",
+      street: "",
+      city: "",
+      postalCode: "",
+      country: "",
+      companyNIP: "",
+      headquarters: "",
+      regon: "",
+      acceptTerms: false,
+    },
+  });
 
-  const [companyName, setCompanyName] = useState("");
-  const [companyAddress, setCompanyAddress] = useState("");
-  const [companyNIP, setCompanyNIP] = useState("");
-
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
+  const [errorTitle, setErrorTitle] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
-
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Proszę wypełnić wszystkie dane osobowe");
-      setActiveTab("personal");
-      setIsLoading(false);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Hasła nie są takie same");
-      setActiveTab("personal");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!companyName || !companyAddress) {
-      setError("Proszę wypełnić wszystkie dane firmy");
-      setActiveTab("company");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!companyNIP) {
-      setError("Proszę wprowadzić NIP firmy");
-      setActiveTab("company");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!acceptTerms) {
-      setError("Musisz zaakceptować regulamin");
-      setIsLoading(false);
-      return;
-    }
-
+  const handleSubmit = async (values: z.infer<typeof registerFormSchema>) => {
     try {
-      const response = await fetch("https://localhost:50787/register", {
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          companyName,
-          companyAddress,
-          companyNIP,
-        }),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.ok) {
-        console.log("Success!");
-        return;
-      } else {
-        const result = await response.json();
-        setError(result.message || "Wystąpił błąd.");
+      const { data, status } = await api.post<AuthApiResponse>(
+        "/register",
+        values,
+      );
+      if (status === 200) {
+        Cookies.set("token", data.token, { expires: 7 });
+        Cookies.set("refreshToken", data.refreshToken);
+        // Redirect to the dashboard or home page
       }
-      return;
     } catch (err) {
-      setError("Wystąpił błąd. Spróbuj ponownie.");
-    } finally {
-      setIsLoading(false);
+      const errorResponse = (err as any)?.response;
+      const apiError: AuthApiResponse = errorResponse?.data;
+      setErrorTitle(apiError?.resultTitle);
+      if (apiError?.resultDescription.includes(","))
+        form.setError("root", {
+          message: apiError?.resultDescription,
+        });
     }
   };
 
+  const getFormattedErrorMessage = (error: string | undefined) => {
+    return error?.includes(",")
+      ? error.split(",").map((error) => <div key={error}>{error}</div>)
+      : error;
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <Alert variant="destructive" className="py-2 text-sm">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        {form.formState.errors.root && (
+          <Alert variant="destructive" className="mb-4">
+            <CircleX color="red" />
+            <AlertTitle>{errorTitle}</AlertTitle>
+            <AlertDescription>
+              {getFormattedErrorMessage(form.formState.errors.root.message)}
+            </AlertDescription>
+          </Alert>
+        )}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 h-9 bg-transparent">
-          <TabsTrigger
-            value="personal"
-            className="text-[#393637] data-[state=active]:text-white data-[state=active]:bg-[#393637] dark:data-[state=active]:bg-[#393637]"
-          >
-            Osobowe
-          </TabsTrigger>
-          <TabsTrigger
-            value="company"
-            className="text-[#393637] data-[state=active]:text-white data-[state=active]:bg-[#393637] dark:data-[state=active]:bg-[#393637]"
-          >
-            Firma
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="personal" className="space-y-3 pt-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="name" className="text-sm text-[#393637]">
-              Imię i nazwisko
-            </Label>
-            <Input
-              id="name"
-              placeholder="Jan Kowalski"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="register-email" className="text-sm text-[#393637]">
-              E-mail
-            </Label>
-            <Input
-              id="register-email"
-              type="email"
-              placeholder="ty@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="register-password"
-              className="text-sm text-[#393637]"
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid h-9 w-full grid-cols-2 bg-transparent">
+            <TabsTrigger
+              value="personal"
+              className="cursor-pointer text-[#393637] data-[state=active]:bg-[#393637] data-[state=active]:text-white dark:data-[state=active]:bg-[#393637]"
             >
-              Hasło
-            </Label>
-            <Input
-              id="register-password"
-              type="password"
-              placeholder="*********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="confirm-password"
-              className="text-sm text-[#393637]"
+              Osobowe
+            </TabsTrigger>
+            <TabsTrigger
+              value="company"
+              className="cursor-pointer text-[#393637] data-[state=active]:bg-[#393637] data-[state=active]:text-white dark:data-[state=active]:bg-[#393637]"
             >
-              Potwierdź hasło
-            </Label>
-            <Input
-              id="confirm-password"
-              type="password"
-              placeholder="*********"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
-            />
-          </div>
+              Firma
+            </TabsTrigger>
+          </TabsList>
 
-          <Button
-            type="button"
-            className="w-full bg-[#393637] hover:bg-[#4a4748] text-white h-9 mt-2"
-            onClick={() => setActiveTab("company")}
-          >
-            Dalej
-          </Button>
-        </TabsContent>
+          <TabsContent value="personal" className="space-y-3 pt-3">
+            {getPersonalFields(form).map(
+              ({ name, label, placeholder, type }) => (
+                <CustomFormField
+                  key={name}
+                  control={form.control}
+                  name={name}
+                  label={label}
+                  renderField={(field) => (
+                    <Input
+                      type={type || "text"}
+                      placeholder={placeholder}
+                      {...field}
+                    />
+                  )}
+                />
+              ),
+            )}
 
-        <TabsContent value="company" className="space-y-3 pt-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="company-name" className="text-sm text-[#393637]">
-              Nazwa firmy
-            </Label>
-            <Input
-              id="company-name"
-              placeholder="Acme Sp. z o.o."
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              required
-              className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="company-address" className="text-sm text-[#393637]">
-              Adres firmy
-            </Label>
-            <Input
-              id="company-address"
-              placeholder="ul. Biznesowa 12, Miasto"
-              value={companyAddress}
-              onChange={(e) => setCompanyAddress(e.target.value)}
-              required
-              className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="company-nip" className="text-sm text-[#393637]">
-              NIP firmy
-            </Label>
-            <Input
-              id="company-nip"
-              placeholder="PLXXXXXXXXX"
-              value={companyNIP}
-              onChange={(e) => setCompanyNIP(e.target.value)}
-              required
-              className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
-            />
-          </div>
-
-          <div className="flex items-center space-x-2 pt-1">
-            <Checkbox
-              id="terms"
-              checked={acceptTerms}
-              onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
-              className="ring-2 ring-[#393637]"
-            />
-            <label
-              htmlFor="terms"
-              className="text-xs font-medium leading-none text-[#393637]"
-            >
-              Akceptuję regulamin
-            </label>
-          </div>
-
-          <div className="flex space-x-2 pt-2">
             <Button
               type="button"
-              variant="outline"
-              className="flex-1 h-9 border-gray-300 text-text-[#393637] hover:bg-gray-50 dark:border-[#39363715] dark:hover:text-white dark:text-[#393637] dark:hover:bg-[#393637]"
-              onClick={() => setActiveTab("personal")}
+              className="mt-2 h-9 w-full bg-[#393637] text-white hover:bg-[#4a4748]"
+              onClick={() => setActiveTab("company")}
             >
-              Wstecz
+              Dalej
             </Button>
-            <Button
-              type="submit"
-              className="flex-1 bg-[#393637] hover:bg-[#4a4748] text-white h-9"
-              disabled={isLoading}
-            >
-              {isLoading ? "Tworzenie..." : "Rejestruj"}
-            </Button>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </form>
+          </TabsContent>
+
+          <TabsContent value="company" className="space-y-6 pt-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {getCompanyFields(form).map(({ name, label, placeholder }) => (
+                <CustomFormField
+                  key={name}
+                  control={form.control}
+                  name={name}
+                  label={label}
+                  renderField={(field) => (
+                    <Input placeholder={placeholder} {...field} />
+                  )}
+                />
+              ))}
+            </div>
+
+            <CustomFormField
+              control={form.control}
+              name="acceptTerms"
+              label=""
+              renderField={(field) => (
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    ref={field.ref}
+                  />
+                  <span
+                    className="flex gap-1 cursor-pointer"
+                    onClick={() => field.onChange(!field.value)}
+                  >
+                    Akceptuję
+                    <Link
+                      href="/regulamin"
+                      className="underline hover:text-blue-500"
+                    >
+                      regulamin
+                    </Link>
+                  </span>
+                </div>
+              )}
+            />
+
+            <div className="flex w-full space-x-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-9 border-gray-300 hover:bg-gray-50 dark:border-[#39363715] dark:hover:bg-[#393637] dark:hover:text-white"
+                onClick={() => setActiveTab("personal")}
+              >
+                Wstecz
+              </Button>
+              <Button
+                type="submit"
+                className="h-9 flex-1 border-gray-300 dark:border-[#39363715] dark:text-[#393637] dark:hover:bg-[#393637] dark:hover:text-white"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting
+                  ? "Tworzenie konta..."
+                  : "Rejestruj"}
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </form>
+    </Form>
   );
 }

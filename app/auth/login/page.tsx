@@ -1,94 +1,92 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import { loginFormSchema, getLoginFields } from "./login-config";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { CustomFormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { api } from "@/lib/axios";
+import { AuthApiResponse } from "@/types/response";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Cookies from "js-cookie";
+import { CircleX } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+  const [errorTitle, setErrorTitle] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
-
-    // Walidacja formularza
-    if (!email || !password) {
-      setError("Proszę wypełnić wszystkie pola");
-      setIsLoading(false);
-      return;
-    }
-
+  const handleSubmit = async (values: z.infer<typeof loginFormSchema>) => {
     try {
-      return;
+      const { data, status } = await api.post<AuthApiResponse>(
+        "/login",
+        values,
+      );
+      if (status === 200) {
+        Cookies.set("token", data.token, { expires: 7 });
+        Cookies.set("refreshToken", data.refreshToken);
+        // Redirect to the dashboard or home page
+      }
     } catch (err) {
-      setError("Wystąpił błąd. Spróbuj ponownie.");
-    } finally {
-      setIsLoading(false);
+      const errorResponse = (err as any)?.response;
+      const apiError: AuthApiResponse = errorResponse?.data;
+      setErrorTitle(apiError?.resultTitle);
+      form.setError("root", {
+        message: apiError?.resultDescription,
+      });
     }
   };
 
+  const getFormattedErrorMessage = (error: string | undefined) => {
+    return error?.includes(",")
+      ? error.split(",").map((error) => <div key={error}>{error}</div>)
+      : error;
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <Alert variant="destructive" className="py-2 text-sm">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        {form.formState.errors.root && (
+          <Alert variant="destructive" className="mb-4">
+            <CircleX color="red" />
+            <AlertTitle>{errorTitle}</AlertTitle>
+            <AlertDescription>
+              {getFormattedErrorMessage(form.formState.errors.root.message)}
+            </AlertDescription>
+          </Alert>
+        )}
 
-      <div className="space-y-1.5">
-        <Label
-          htmlFor="email"
-          className="text-sm text-[#393637] dark:text-[#393637]"
+        {getLoginFields(form).map(
+          ({ name, control, label, placeholder, type }) => (
+            <CustomFormField
+              key={name}
+              control={control}
+              name={name}
+              label={label}
+              renderField={(field) => (
+                <Input type={type} placeholder={placeholder} {...field} />
+              )}
+            />
+          ),
+        )}
+
+        <Button
+          type="submit"
+          className="h-9 w-full border-gray-300 text-white dark:border-[#39363715] dark:text-[#393637] dark:hover:bg-[#393637] dark:hover:text-white"
+          disabled={form.formState.isSubmitting}
         >
-          E-mail
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          placeholder="twoj@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none border-[#39363715] dark:text-black"
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password" className="text-sm dark:text-[#393637]">
-            Hasło
-          </Label>
-          <a href="#" className="text-xs text-[#393637] dark:text-[#393637]">
-            Zapomniałeś hasła?
-          </a>
-        </div>
-        <Input
-          placeholder="***********"
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="h-9 ring-0 outline-0 border-0 border-b-1 rounded-none shadow-none dark:text-black border-[#39363715]"
-        />
-      </div>
-
-      <Button
-        type="submit"
-        className="w-full dark:bg-[#393637] hover:bg-[#4a4748] dark:hover:bg-[#393637] dark:text-white text-white h-9 mt-2"
-        disabled={isLoading}
-      >
-        {isLoading ? "Logowanie..." : "Zaloguj się"}
-      </Button>
-    </form>
+          {form.formState.isSubmitting ? "Logowanie..." : "Zaloguj się"}
+        </Button>
+      </form>
+    </Form>
   );
 }
