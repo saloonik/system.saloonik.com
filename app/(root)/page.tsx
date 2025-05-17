@@ -1,10 +1,9 @@
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import Clients from "./clients/page";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-24">
-      <ThemeSwitcher />
-      <p className="text-2xl">Hello world Saloonik!</p>
+    <div className="p-5">
+      <Clients />
     </div>
   );
 }
