@@ -48,7 +48,7 @@ export default function Register() {
   const handleSubmit = async (values: z.infer<typeof registerFormSchema>) => {
     try {
       const { data, status } = await api.post<AuthApiResponse>(
-        "/register",
+        "/Auth/register",
         values,
       );
       if (status === 200) {

@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { redirect } from "next/navigation";
 
 export const api = axios.create({
   baseURL: "http://localhost:8000",
@@ -28,7 +29,7 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      window.location.href = "/auth/login";
+      redirect("/auth/login");
     }
     return Promise.reject(error);
   },

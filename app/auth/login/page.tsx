@@ -28,7 +28,7 @@ export default function Login() {
   const handleSubmit = async (values: z.infer<typeof loginFormSchema>) => {
     try {
       const { data, status } = await api.post<AuthApiResponse>(
-        "/login",
+        "/Auth/login",
         values,
       );
       if (status === 200) {
