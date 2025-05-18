@@ -21,7 +21,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface Pagination {
   pageNumber: number;
@@ -44,31 +44,28 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [pagination, setPagination] = useState({
+    pageIndex: pageProperties.pageNumber - 1,
+    pageSize: pageProperties.pageSize,
+  });
 
   const table = useReactTable({
     data,
     columns,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     state: {
       sorting,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageIndex: pageProperties.pageNumber - 1,
-        pageSize: pageProperties.pageSize,
-      },
+      pagination,
     },
-    initialState: {
-      pagination: {
-        pageIndex: pageProperties.pageNumber - 1,
-        pageSize: pageProperties.pageSize,
-      },
-    },
+    manualPagination: true,
+    pageCount: pageProperties.totalPages,
   });
 
   return (
@@ -85,6 +82,14 @@ export function DataTable<TData, TValue>({
         <DataTableSearchBar />
         <DataTableViewOptions table={table} />
       </div>
+
+      {/* Add data refresh notification */}
+      {data.length === 0 && pageProperties.totalCount > 0 && (
+        <div className="p-2 text-sm bg-yellow-100 text-center">
+          Ładowanie danych... Jeśli dane nie pojawiają się, spróbuj odświeżyć
+          stronę.
+        </div>
+      )}
 
       <div className="relative">
         <Table className="w-full table-fixed">
@@ -111,7 +116,7 @@ export function DataTable<TData, TValue>({
         <div className="max-h-96 overflow-y-auto w-full">
           <Table className="w-full table-fixed">
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}

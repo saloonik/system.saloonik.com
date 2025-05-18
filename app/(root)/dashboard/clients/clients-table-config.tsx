@@ -23,6 +23,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Imię" />
     ),
     enableSorting: true,
+    id: "Imię ",
   },
   {
     accessorKey: "lastName",
@@ -30,6 +31,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Nazwisko" />
     ),
     enableSorting: true,
+    id: "Nazwisko",
   },
   {
     accessorKey: "email",
@@ -37,6 +39,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Email" />
     ),
     enableSorting: true,
+    id: "Email",
   },
   {
     accessorKey: "phoneNumber",
@@ -44,6 +47,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Telefon" />
     ),
     enableSorting: true,
+    id: "Telefon",
   },
   {
     accessorKey: "city",
@@ -51,6 +55,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Miasto" />
     ),
     enableSorting: true,
+    id: "Miasto",
   },
   {
     accessorKey: "street",
@@ -58,6 +63,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Ulica" />
     ),
     enableSorting: true,
+    id: "Ulica",
   },
   {
     accessorKey: "postalCode",
@@ -65,6 +71,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Kod pocztowy" />
     ),
     enableSorting: true,
+    id: "Kod pocztowy",
   },
   {
     accessorKey: "country",
@@ -72,6 +79,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Kraj" />
     ),
     enableSorting: true,
+    id: "Kraj",
   },
   {
     accessorKey: "dateOfBirth",
@@ -79,6 +87,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Data urodzenia" />
     ),
     enableSorting: true,
+    id: "Data urodzenia",
   },
   {
     accessorKey: "notes",
@@ -86,6 +95,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Notatki" />
     ),
     enableSorting: true,
+    id: "Notatki",
   },
   {
     accessorKey: "actions",
@@ -109,5 +119,6 @@ export const clientColumns: ColumnDef<Client>[] = [
         </DropdownMenu>
       );
     },
+    id: "Akcje",
   },
 ];

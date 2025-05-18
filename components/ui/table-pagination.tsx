@@ -34,16 +34,22 @@ export function DataTablePagination<TData>({
   const searchParams = useSearchParams();
 
   const handlePageSizeChange = (value: string) => {
-    table.setPageSize(Number(value));
+    const newPageSize = Number(value);
+    table.setPageSize(newPageSize);
+    table.setPageIndex(0);
     const params = new URLSearchParams(searchParams.toString());
     params.set("pageSize", value);
-    router.replace(`?${params.toString()}`);
-  };
+    params.set("pageNumber", "1");
 
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
   const handlePageNumberChange = (value: string) => {
+    const newPageIndex = Number(value) - 1;
+    table.setPageIndex(newPageIndex);
     const params = new URLSearchParams(searchParams.toString());
     params.set("pageNumber", value);
-    router.replace(`?${params.toString()}`);
+
+    router.replace(`?${params.toString()}`, { scroll: false });
   };
 
   return (

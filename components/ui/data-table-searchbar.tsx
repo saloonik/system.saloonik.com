@@ -13,7 +13,7 @@ export const DataTableSearchBar = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("searchTerm", value.trim());
     params.set("pageNumber", "1");
-    router.replace(`?${params.toString()}`);
+    router.replace(`?${params.toString()}`, { scroll: false });
   }, 300);
 
   return (
@@ -23,6 +23,7 @@ export const DataTableSearchBar = () => {
         type="text"
         placeholder="Wyszukaj..."
         className="border w-[400px] pl-8"
+        defaultValue={searchParams.get("searchTerm") || ""}
         onChange={(e) => handleSearchTermChange(e.target.value)}
       />
     </fieldset>

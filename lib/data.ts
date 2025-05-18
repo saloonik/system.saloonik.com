@@ -16,8 +16,12 @@ export const getClients = async (
   query?: QueryParams,
 ): Promise<ApiResponse<Client[]>> => {
   try {
+    const pageNumber = query?.pageNumber ?? "1";
+    const pageSize = query?.pageSize ?? "10";
+    const searchTerm = query?.searchTerm ?? "";
+
     const { data } = await api.get<ApiResponse<Client[]>>(
-      `/api/Clients/Get?PageNumber=${query?.pageNumber ?? 1}&PageSize=${query?.pageSize ?? 10}&SearchTerm=${query?.searchTerm ?? ""}`,
+      `/api/Clients/Get?PageNumber=${pageNumber}&PageSize=${pageSize}&SearchTerm=${searchTerm}`,
       {
         headers: {
           Authorization: `Bearer ${await getToken()}`,

@@ -15,13 +15,17 @@ export default async function Clients({
     pageSize: currentSize,
     totalCount,
     totalPages,
-  } = await getClients({ pageNumber, pageSize, searchTerm });
+  } = await getClients({
+    pageNumber,
+    pageSize,
+    searchTerm,
+  });
 
   return (
     <div className="flex justify-center m-5">
       <DataTable
         columns={clientColumns}
-        data={data?.flat()}
+        data={data.flat()}
         pageProperties={{
           pageNumber: currentPage,
           pageSize: currentSize,
