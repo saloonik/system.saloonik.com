@@ -11,6 +11,7 @@ import { AuthApiResponse } from "@/types/response";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Cookies from "js-cookie";
 import { CircleX } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -24,6 +25,7 @@ export default function Login() {
     },
   });
   const [errorTitle, setErrorTitle] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleSubmit = async (values: z.infer<typeof loginFormSchema>) => {
     try {
@@ -34,7 +36,7 @@ export default function Login() {
       if (status === 200) {
         Cookies.set("token", data.token, { expires: 7 });
         Cookies.set("refreshToken", data.refreshToken);
-        // Redirect to the dashboard or home page
+        router.push("/dashboard");
       }
     } catch (err) {
       const errorResponse = (err as any)?.response;

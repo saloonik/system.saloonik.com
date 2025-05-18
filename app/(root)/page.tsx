@@ -1,4 +1,4 @@
-import Clients from "./clients/page";
+import Clients from "./dashboard/clients/page";
 
 export default function Home() {
   return (

@@ -1,4 +1,4 @@
-import { AppSidebar } from "./(sidebar)/app-sidebar";
+import { AppSidebar } from "./dashboard/(sidebar)/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 
