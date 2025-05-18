@@ -14,9 +14,13 @@ export interface ApiResponse<T> {
   resultDescription: string;
   statusCode: number;
   statusMessage: string;
-  token: string;
-  refreshToken: string;
+  token: string | null;
+  refreshToken: string | null;
   data: T[];
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
 }
 
 export interface Client {

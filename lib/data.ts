@@ -3,8 +3,8 @@ import { ApiResponse, Client } from "@/types/response";
 import { cookies } from "next/headers";
 
 interface QueryParams {
-  pageNumber?: number;
-  pageSize?: number;
+  pageNumber?: string;
+  pageSize?: string;
   searchTerm?: string;
 }
 
@@ -17,9 +17,7 @@ export const getClients = async (
 ): Promise<ApiResponse<Client[]>> => {
   try {
     const { data } = await api.get<ApiResponse<Client[]>>(
-      query
-        ? `/api/Clients/Get?PageNumber=${query?.pageNumber}&PageSize=${query?.pageSize}&SearchTerm=${query?.searchTerm}`
-        : "/api/Clients/Get",
+      `/api/Clients/Get?PageNumber=${query?.pageNumber ?? 1}&PageSize=${query?.pageSize ?? 10}&SearchTerm=${query?.searchTerm ?? ""}`,
       {
         headers: {
           Authorization: `Bearer ${await getToken()}`,
@@ -29,6 +27,6 @@ export const getClients = async (
     return data;
   } catch (error) {
     console.error("Error fetching clients:", error);
-    throw error;
+    throw new Error("Failed to fetch clients");
   }
 };

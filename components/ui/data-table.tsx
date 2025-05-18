@@ -1,12 +1,6 @@
 "use client";
 
-import { Button } from "./button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-} from "./dropdown-menu";
+import { DataTableSearchBar } from "./data-table-searchbar";
 import { DataTablePagination } from "./table-pagination";
 import { DataTableViewOptions } from "./table-view-options";
 import {
@@ -29,14 +23,23 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react";
 
+export interface Pagination {
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  pageProperties: Pagination;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  pageProperties,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -55,19 +58,44 @@ export function DataTable<TData, TValue>({
       sorting,
       columnVisibility,
       rowSelection,
+      pagination: {
+        pageIndex: pageProperties.pageNumber - 1,
+        pageSize: pageProperties.pageSize,
+      },
+    },
+    initialState: {
+      pagination: {
+        pageIndex: pageProperties.pageNumber - 1,
+        pageSize: pageProperties.pageSize,
+      },
     },
   });
 
   return (
     <div className="rounded-md border">
-      <DataTableViewOptions table={table} />
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
+      <div className="flex items-center justify-between p-4">
+        <h2 className="text-lg font-semibold">Tabela Klientów</h2>
+        <div className="flex items-center">
+          <span className="text-sm text-muted-foreground">
+            {pageProperties.totalCount} wyników
+          </span>
+        </div>
+      </div>
+      <div className="flex items-center justify-between p-4">
+        <DataTableSearchBar />
+        <DataTableViewOptions table={table} />
+      </div>
+
+      <div className="relative">
+        <Table className="w-full table-fixed">
+          <TableHeader className="sticky top-0 z-20">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="sticky top-0 z-20 px-4 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -75,35 +103,48 @@ export function DataTable<TData, TValue>({
                           header.getContext(),
                         )}
                   </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                Brak wyników.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <DataTablePagination table={table} />
+            ))}
+          </TableHeader>
+        </Table>
+        <div className="max-h-96 overflow-y-auto w-full">
+          <Table className="w-full table-fixed">
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className="px-4 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    Brak wyników.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+      <DataTablePagination table={table} pageProperties={pageProperties} />
     </div>
   );
 }
