@@ -1,6 +1,7 @@
 "use client";
 
 import { DataTableSearchBar } from "./data-table-searchbar";
+import { DownloadSampleClientFiles } from "./download-sample-files";
 import { DataTablePagination } from "./table-pagination";
 import { DataTableViewOptions } from "./table-view-options";
 import {
@@ -80,7 +81,10 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="flex items-center justify-between p-4">
         <DataTableSearchBar />
+        <div className="flex">
+        <DownloadSampleClientFiles/>
         <DataTableViewOptions table={table} />
+        </div>
       </div>
 
       {/* Add data refresh notification */}
