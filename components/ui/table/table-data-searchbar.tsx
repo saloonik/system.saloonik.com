@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "./input";
+import { Input } from "../input";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";

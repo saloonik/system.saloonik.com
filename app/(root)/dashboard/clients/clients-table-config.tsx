@@ -5,15 +5,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DataTableColumnHeader } from "@/components/ui/table-header-column";
-import { getCheckboxColumn } from "@/components/ui/table-utils";
+import { DataTableColumnHeader } from "@/components/ui/table/table-header-column";
+import {
+  getCheckboxColumn,
+  TableOperation,
+} from "@/components/ui/table/table-utils";
 import { Client } from "@/types/response";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { FileDown, MoreHorizontal, Trash2 } from "lucide-react";
 
 export const clientColumns: ColumnDef<Client>[] = [
   getCheckboxColumn(),
@@ -118,5 +119,16 @@ export const clientColumns: ColumnDef<Client>[] = [
       );
     },
     id: "Akcje",
+  },
+];
+
+export const clientsSingleOperations: TableOperation[] = [
+  {
+    icon: <FileDown size={20} />,
+    operation: "Eksportuj zaznaczone",
+  },
+  {
+    icon: <Trash2 size={20} color="#EF4444" />,
+    operation: "Usuń zaznaczone",
   },
 ];

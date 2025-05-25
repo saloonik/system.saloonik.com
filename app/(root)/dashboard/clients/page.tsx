@@ -1,5 +1,5 @@
-import { clientColumns } from "./clients-table-config";
-import { DataTable } from "@/components/ui/data-table";
+import { clientColumns, clientsSingleOperations } from "./clients-table-config";
+import { DataTable } from "@/components/ui/table/data-table";
 import { getClients } from "@/lib/data";
 
 export default async function Clients({
@@ -37,6 +37,7 @@ export default async function Clients({
           totalCount,
           totalPages,
         }}
+        singleOperations={clientsSingleOperations}
       />
     </div>
   );

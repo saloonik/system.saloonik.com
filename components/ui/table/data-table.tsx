@@ -1,8 +1,10 @@
 "use client";
 
-import { TableDefaultOperations } from "../table-default-operations";
-import { DataTableSearchBar } from "./data-table-searchbar";
+import { DataTableSearchBar } from "./table-data-searchbar";
+import { TableDefaultOperations } from "./table-default-operations";
 import { DataTablePagination } from "./table-pagination";
+import { TableSelectOperations } from "./table-select-operations";
+import { TableDropdownOperation, TableOperation } from "./table-utils";
 import { DataTableViewOptions } from "./table-view-options";
 import {
   Table,
@@ -11,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table/table";
 import {
   ColumnDef,
   flexRender,
@@ -21,6 +23,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
+import { FileDown, Trash2, UserPlus2 } from "lucide-react";
 import { useState } from "react";
 
 export interface Pagination {
@@ -35,6 +38,8 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   pageProperties: Pagination;
   title: string;
+  singleOperations?: TableOperation[];
+  dropdownOperations?: TableDropdownOperation[];
 }
 
 export function DataTable<TData, TValue>({
@@ -42,6 +47,8 @@ export function DataTable<TData, TValue>({
   data,
   pageProperties,
   title,
+  singleOperations,
+  dropdownOperations,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -88,7 +95,15 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-between p-4">
         <DataTableSearchBar />
         <div className="flex items-center gap-3">
-          <TableDefaultOperations />
+          {table.getSelectedRowModel().rows.length > 0 ? (
+            <TableSelectOperations
+              singleOperations={singleOperations ?? []}
+              dropdownOperations={dropdownOperations ?? []}
+            />
+          ) : (
+            <TableDefaultOperations />
+          )}
+
           <DataTableViewOptions table={table} />
         </div>
       </div>
