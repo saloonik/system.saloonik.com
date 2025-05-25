@@ -1,4 +1,5 @@
 import { Checkbox } from "./checkbox";
+import { ColumnDef } from "@tanstack/react-table";
 
 export const getCheckboxColumn = () => ({
   id: "select",

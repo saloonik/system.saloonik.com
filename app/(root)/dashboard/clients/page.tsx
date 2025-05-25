@@ -5,9 +5,13 @@ import { getClients } from "@/lib/data";
 export default async function Clients({
   searchParams,
 }: {
-  searchParams: { pageNumber: string; pageSize: string; searchTerm: string };
+  searchParams?: { pageNumber: number; pageSize: number; searchTerm: string };
 }) {
-  const { pageNumber, pageSize, searchTerm } = await searchParams;
+  const { pageNumber, pageSize, searchTerm } = searchParams ?? {
+    pageNumber: 1,
+    pageSize: 10,
+    searchTerm: "",
+  };
 
   const {
     data,
@@ -22,8 +26,9 @@ export default async function Clients({
   });
 
   return (
-    <div className="flex justify-center m-5">
+    <div className="flex justify-center w-3/5 m-5">
       <DataTable
+        title="Klienci"
         columns={clientColumns}
         data={data.flat()}
         pageProperties={{

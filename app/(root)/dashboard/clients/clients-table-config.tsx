@@ -23,7 +23,7 @@ export const clientColumns: ColumnDef<Client>[] = [
       <DataTableColumnHeader column={column} title="Imię" />
     ),
     enableSorting: true,
-    id: "Imię ",
+    id: "Imię",
   },
   {
     accessorKey: "lastName",
@@ -111,8 +111,6 @@ export const clientColumns: ColumnDef<Client>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Akcje</DropdownMenuLabel>
-            <DropdownMenuSeparator />
             <DropdownMenuItem>Edytuj</DropdownMenuItem>
             <DropdownMenuItem>Usuń</DropdownMenuItem>
           </DropdownMenuContent>

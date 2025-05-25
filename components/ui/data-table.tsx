@@ -1,5 +1,6 @@
 "use client";
 
+import { TableDefaultOperations } from "../table-default-operations";
 import { DataTableSearchBar } from "./data-table-searchbar";
 import { DataTablePagination } from "./table-pagination";
 import { DataTableViewOptions } from "./table-view-options";
@@ -15,13 +16,12 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export interface Pagination {
   pageNumber: number;
@@ -34,15 +34,22 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageProperties: Pagination;
+  title: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   pageProperties,
+  title,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    "Data urodzenia": false,
+    "Kod pocztowy": false,
+    Notatki: false,
+    Kraj: false,
+  });
   const [rowSelection, setRowSelection] = useState({});
   const [pagination, setPagination] = useState({
     pageIndex: pageProperties.pageNumber - 1,
@@ -69,9 +76,9 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border flex flex-col h-full">
       <div className="flex items-center justify-between p-4">
-        <h2 className="text-lg font-semibold">Tabela Klientów</h2>
+        <h2 className="text-lg font-semibold">{title}</h2>
         <div className="flex items-center">
           <span className="text-sm text-muted-foreground">
             {pageProperties.totalCount} wyników
@@ -80,18 +87,12 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="flex items-center justify-between p-4">
         <DataTableSearchBar />
-        <DataTableViewOptions table={table} />
-      </div>
-
-      {/* Add data refresh notification */}
-      {data.length === 0 && pageProperties.totalCount > 0 && (
-        <div className="p-2 text-sm bg-yellow-100 text-center">
-          Ładowanie danych... Jeśli dane nie pojawiają się, spróbuj odświeżyć
-          stronę.
+        <div className="flex items-center gap-3">
+          <TableDefaultOperations />
+          <DataTableViewOptions table={table} />
         </div>
-      )}
-
-      <div className="relative">
+      </div>
+      <div className="relative flex-grow overflow-hidden">
         <Table className="w-full table-fixed">
           <TableHeader className="sticky top-0 z-20">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -99,7 +100,9 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="sticky top-0 z-20 px-4 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
+                    className={`sticky top-0 z-20 px-4 py-2 whitespace-nowrap overflow-hidden text-ellipsis ${
+                      header.id === "select" ? "w-[50px]" : "w-fit text-left"
+                    } ${header.id === "Akcje" ? "text-right ml-auto" : ""}`}
                   >
                     {header.isPlaceholder
                       ? null
@@ -113,7 +116,7 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
         </Table>
-        <div className="max-h-96 overflow-y-auto w-full">
+        <div className="h-auto max-h-[calc(100vh-18rem)] overflow-y-auto w-full">
           <Table className="w-full table-fixed">
             <TableBody>
               {table.getRowModel().rows.length ? (
@@ -125,7 +128,9 @@ export function DataTable<TData, TValue>({
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className="px-4 py-2 whitespace-nowrap overflow-hidden text-ellipsis"
+                        className={`px-4 py-2 whitespace-nowrap overflow-hidden text-ellipsis ${
+                          cell.column.id === "select" ? "w-[50px]" : ""
+                        } ${cell.column.id === "Akcje" ? "text-right" : ""}`}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
