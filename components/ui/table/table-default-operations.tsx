@@ -4,9 +4,15 @@ import {
   TableDropdownOperation,
   TableSingleOperation,
 } from "./table-utils";
-import { FileDown, Trash2, UserPlus2 } from "lucide-react";
+import { FileDown, Trash2 } from "lucide-react";
 
-export const TableDefaultOperations = () => {
+interface TableDefaultOperationsProps {
+  customOperationsComponents?: React.ReactNode[];
+}
+
+export const TableDefaultOperations = ({
+  customOperationsComponents,
+}: TableDefaultOperationsProps) => {
   return (
     <div className="flex items-center justify-center gap-3">
       <TooltipProvider>
@@ -15,10 +21,7 @@ export const TableDefaultOperations = () => {
           icon={<FileDown size={20} />}
           operations={exportOptions}
         />
-        <TableSingleOperation
-          icon={<UserPlus2 size={20} />}
-          operation="Dodaj"
-        />
+        {customOperationsComponents}
         <TableSingleOperation
           icon={<Trash2 size={20} color="#EF4444" />}
           operation="Usuń wszystko"

@@ -124,14 +124,14 @@ export const clientColumns: ColumnDef<Client>[] = [
   },
 ];
 
-export const clientsSingleOperations: TableOperation[] = [
+export const clientsSingleSelectOperations: TableOperation[] = [
   {
     icon: <Trash2 size={20} color="#EF4444" />,
     operation: "Usuń zaznaczone",
   },
 ];
 
-export const clientsDropdownOperations: TableDropdownOperation[] = [
+export const clientsDropdownSelectOperations: TableDropdownOperation[] = [
   {
     title: "Eksportuj zaznaczone",
     icon: <FileDown size={20} />,

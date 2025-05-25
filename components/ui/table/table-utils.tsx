@@ -11,6 +11,7 @@ import { ChevronDown } from "lucide-react";
 export interface TableOperation {
   icon: React.ReactNode;
   operation: string;
+  onClick?: () => void;
 }
 
 export interface TableDropdownOperation {
@@ -42,11 +43,17 @@ export const getCheckboxColumn = () => ({
   ),
 });
 
-export const TableSingleOperation = ({ icon, operation }: TableOperation) => {
+export const TableSingleOperation = ({
+  icon,
+  operation,
+  ...props
+}: TableOperation & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   return (
     <Tooltip>
-      <TooltipTrigger className="cursor-pointer border p-2 rounded-md">
-        {icon}
+      <TooltipTrigger asChild>
+        <button className="cursor-pointer border p-2 rounded-md" {...props}>
+          {icon}
+        </button>
       </TooltipTrigger>
       <TooltipContent>{operation}</TooltipContent>
     </Tooltip>

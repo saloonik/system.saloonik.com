@@ -1,8 +1,9 @@
 import {
   clientColumns,
-  clientsDropdownOperations,
-  clientsSingleOperations,
+  clientsDropdownSelectOperations,
+  clientsSingleSelectOperations,
 } from "./clients-table-config";
+import { CreateClientDialog } from "./create-client-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { getClients } from "@/lib/data";
 
@@ -11,7 +12,7 @@ export default async function Clients({
 }: {
   searchParams?: { pageNumber: number; pageSize: number; searchTerm: string };
 }) {
-  const { pageNumber, pageSize, searchTerm } = searchParams ?? {
+  const { pageNumber, pageSize, searchTerm } = (await searchParams) ?? {
     pageNumber: 1,
     pageSize: 10,
     searchTerm: "",
@@ -41,8 +42,9 @@ export default async function Clients({
           totalCount,
           totalPages,
         }}
-        singleOperations={clientsSingleOperations}
-        dropdownOperations={clientsDropdownOperations}
+        singleSelectOperations={clientsSingleSelectOperations}
+        dropdownSelectOperations={clientsDropdownSelectOperations}
+        customOperationsComponents={[<CreateClientDialog />]}
       />
     </div>
   );

@@ -6,25 +6,25 @@ import {
 } from "./table-utils";
 
 interface TableSelectOperationsProps {
-  singleOperations: TableOperation[];
-  dropdownOperations: TableDropdownOperation[];
+  singleSelectOperations: TableOperation[];
+  dropdownSelectOperations: TableDropdownOperation[];
 }
 
 export const TableSelectOperations = ({
-  singleOperations,
-  dropdownOperations,
+  singleSelectOperations,
+  dropdownSelectOperations,
 }: TableSelectOperationsProps) => {
   return (
     <div className="flex items-center justify-center gap-3">
       <TooltipProvider>
-        {dropdownOperations.length > 0 && (
+        {dropdownSelectOperations.length > 0 && (
           <TableDropdownOperation
-            title={dropdownOperations[0].title}
-            icon={dropdownOperations[0].icon}
-            operations={dropdownOperations[0].operations}
+            title={dropdownSelectOperations[0].title}
+            icon={dropdownSelectOperations[0].icon}
+            operations={dropdownSelectOperations[0].operations}
           />
         )}
-        {singleOperations.map((operation) => (
+        {singleSelectOperations.map((operation) => (
           <TableSingleOperation key={operation.operation} {...operation} />
         ))}
       </TooltipProvider>

@@ -37,8 +37,9 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   pageProperties: Pagination;
   title: string;
-  singleOperations?: TableOperation[];
-  dropdownOperations?: TableDropdownOperation[];
+  singleSelectOperations?: TableOperation[];
+  dropdownSelectOperations?: TableDropdownOperation[];
+  customOperationsComponents?: React.ReactNode[];
 }
 
 export function DataTable<TData, TValue>({
@@ -46,8 +47,9 @@ export function DataTable<TData, TValue>({
   data,
   pageProperties,
   title,
-  singleOperations,
-  dropdownOperations,
+  singleSelectOperations,
+  dropdownSelectOperations,
+  customOperationsComponents,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -96,11 +98,13 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center gap-3">
           {table.getSelectedRowModel().rows.length > 0 ? (
             <TableSelectOperations
-              singleOperations={singleOperations ?? []}
-              dropdownOperations={dropdownOperations ?? []}
+              singleSelectOperations={singleSelectOperations ?? []}
+              dropdownSelectOperations={dropdownSelectOperations ?? []}
             />
           ) : (
-            <TableDefaultOperations />
+            <TableDefaultOperations
+              customOperationsComponents={customOperationsComponents}
+            />
           )}
 
           <DataTableViewOptions table={table} />
