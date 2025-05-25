@@ -1,4 +1,8 @@
-import { clientColumns, clientsSingleOperations } from "./clients-table-config";
+import {
+  clientColumns,
+  clientsDropdownOperations,
+  clientsSingleOperations,
+} from "./clients-table-config";
 import { DataTable } from "@/components/ui/table/data-table";
 import { getClients } from "@/lib/data";
 
@@ -38,6 +42,7 @@ export default async function Clients({
           totalPages,
         }}
         singleOperations={clientsSingleOperations}
+        dropdownOperations={clientsDropdownOperations}
       />
     </div>
   );

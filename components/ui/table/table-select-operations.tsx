@@ -17,9 +17,6 @@ export const TableSelectOperations = ({
   return (
     <div className="flex items-center justify-center gap-3">
       <TooltipProvider>
-        {singleOperations.map((operation) => (
-          <TableSingleOperation key={operation.operation} {...operation} />
-        ))}
         {dropdownOperations.length > 0 && (
           <TableDropdownOperation
             title={dropdownOperations[0].title}
@@ -27,6 +24,9 @@ export const TableSelectOperations = ({
             operations={dropdownOperations[0].operations}
           />
         )}
+        {singleOperations.map((operation) => (
+          <TableSingleOperation key={operation.operation} {...operation} />
+        ))}
       </TooltipProvider>
     </div>
   );

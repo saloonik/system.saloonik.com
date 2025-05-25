@@ -19,6 +19,8 @@ export interface TableDropdownOperation {
   operations: string[];
 }
 
+export const exportOptions = ["XLS", "CSV", "XLSX", "PDF"];
+
 export const getCheckboxColumn = () => ({
   id: "select",
   header: ({ table }: any) => (

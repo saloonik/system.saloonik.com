@@ -9,7 +9,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/ui/table/table-header-column";
 import {
+  exportOptions,
   getCheckboxColumn,
+  TableDropdownOperation,
   TableOperation,
 } from "@/components/ui/table/table-utils";
 import { Client } from "@/types/response";
@@ -124,11 +126,15 @@ export const clientColumns: ColumnDef<Client>[] = [
 
 export const clientsSingleOperations: TableOperation[] = [
   {
-    icon: <FileDown size={20} />,
-    operation: "Eksportuj zaznaczone",
-  },
-  {
     icon: <Trash2 size={20} color="#EF4444" />,
     operation: "Usuń zaznaczone",
+  },
+];
+
+export const clientsDropdownOperations: TableDropdownOperation[] = [
+  {
+    title: "Eksportuj zaznaczone",
+    icon: <FileDown size={20} />,
+    operations: exportOptions,
   },
 ];

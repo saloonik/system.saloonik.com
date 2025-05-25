@@ -23,7 +23,6 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { FileDown, Trash2, UserPlus2 } from "lucide-react";
 import { useState } from "react";
 
 export interface Pagination {
@@ -130,8 +129,8 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-        </Table>
-        <div className="h-auto max-h-[calc(100vh-18rem)] overflow-y-auto w-full">
+        </Table>{" "}
+        <div className="h-auto max-h-[calc(100vh-18rem)] overflow-y-auto w-full custom-scrollbar">
           <Table className="w-full table-fixed">
             <TableBody>
               {table.getRowModel().rows.length ? (
