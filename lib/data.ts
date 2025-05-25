@@ -3,8 +3,8 @@ import { ApiResponse, Client } from "@/types/response";
 import { cookies } from "next/headers";
 
 interface QueryParams {
-  pageNumber?: number;
-  pageSize?: number;
+  pageNumber?: string;
+  pageSize?: string;
   searchTerm?: string;
 }
 
@@ -16,8 +16,8 @@ export const getClients = async (
   query?: QueryParams,
 ): Promise<ApiResponse<Client[]>> => {
   try {
-    const pageNumber = query?.pageNumber ?? 1;
-    const pageSize = query?.pageSize ?? 10;
+    const pageNumber = query?.pageNumber ?? "1";
+    const pageSize = query?.pageSize ?? "10";
     const searchTerm = query?.searchTerm ?? "";
 
     const { data } = await api.get<ApiResponse<Client[]>>(

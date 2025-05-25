@@ -3,6 +3,7 @@
 import { clientFields } from "./clients-form-config";
 import { DialogCreate } from "@/components/ui/dialog-create";
 import { TableSingleOperation } from "@/components/ui/table/table-utils";
+import { api } from "@/lib/axios";
 import { Client } from "@/types/response";
 import { UserPlus2 } from "lucide-react";
 import { useState } from "react";
@@ -18,7 +19,7 @@ const clientSchema = z.object({
   state: z.string().optional(),
   postalCode: z.string().optional(),
   country: z.string().optional(),
-  dateOfBirth: z.string().optional(),
+  dateOfBirth: z.string().optional().nullable(),
   notes: z.string().optional(),
 });
 
@@ -26,23 +27,13 @@ type ClientFormData = Omit<Client, "clientId" | "companyId" | "reservations">;
 
 export function CreateClientDialog() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Handle client creation
   const handleCreateClient = async (data: ClientFormData) => {
     try {
       setIsSubmitting(true);
-
-      console.log("Creating new client:", data);
-
-      // Example API call (uncomment and adapt as needed)
-      // const response = await fetch('/api/clients', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(data),
-      // })
-      // const result = await response.json()
-
-      // Show success message or handle errors
+      if (!data.dateOfBirth) {
+        data.dateOfBirth = null;
+      }
+      await api.post<Client>("api/Clients/Add", data);
     } catch (error) {
       console.error("Error creating client:", error);
     } finally {

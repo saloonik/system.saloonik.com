@@ -34,7 +34,7 @@ export interface Client {
   state: string;
   postalCode: string;
   country: string;
-  dateOfBirth: string;
+  dateOfBirth: string | null;
   notes: string;
   companyId: string;
   reservations: any[] | null;

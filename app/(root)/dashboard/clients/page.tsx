@@ -10,13 +10,9 @@ import { getClients } from "@/lib/data";
 export default async function Clients({
   searchParams,
 }: {
-  searchParams?: { pageNumber: number; pageSize: number; searchTerm: string };
+  searchParams: { pageNumber: string; pageSize: string; searchTerm: string };
 }) {
-  const { pageNumber, pageSize, searchTerm } = (await searchParams) ?? {
-    pageNumber: 1,
-    pageSize: 10,
-    searchTerm: "",
-  };
+  const { pageNumber, pageSize, searchTerm } = await searchParams;
 
   const {
     data,
@@ -44,7 +40,9 @@ export default async function Clients({
         }}
         singleSelectOperations={clientsSingleSelectOperations}
         dropdownSelectOperations={clientsDropdownSelectOperations}
-        customOperationsComponents={[<CreateClientDialog />]}
+        customOperationsComponents={[
+          <CreateClientDialog key="create-client-dialog" />,
+        ]}
       />
     </div>
   );
