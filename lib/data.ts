@@ -14,7 +14,7 @@ const getToken = async () => {
 
 export const getClients = async (
   query?: QueryParams,
-): Promise<ApiResponse<Client[]>> => {
+): Promise<ApiResponse<Client[]> | null> => {
   try {
     const pageNumber = query?.pageNumber ?? "1";
     const pageSize = query?.pageSize ?? "10";
@@ -30,6 +30,7 @@ export const getClients = async (
     );
     return data;
   } catch (error) {
-    throw new Error("Failed to fetch clients");
+    console.error("Error fetching clients:", error);
+    return null;
   }
 };

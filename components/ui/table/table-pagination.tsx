@@ -87,7 +87,10 @@ export function DataTablePagination<TData>({
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"
                 onClick={() => handlePageNumberChange("1")}
-                disabled={pageProperties.pageNumber === 1}
+                disabled={
+                  pageProperties.pageNumber === 1 ||
+                  pageProperties.totalPages === 0
+                }
               >
                 <span className="sr-only">Przejdź do pierwszej strony</span>
                 <ChevronsLeft />
@@ -105,7 +108,10 @@ export function DataTablePagination<TData>({
                     `${Math.max(1, pageProperties.pageNumber - 1)}`,
                   )
                 }
-                disabled={pageProperties.pageNumber === 1}
+                disabled={
+                  pageProperties.pageNumber === 1 ||
+                  pageProperties.totalPages === 0
+                }
               >
                 <span className="sr-only">Przejdź do poprzedniej strony</span>
                 <ChevronLeft />

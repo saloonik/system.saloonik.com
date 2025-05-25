@@ -17,18 +17,17 @@ export default async function Clients({
     pageSize: "10",
     searchTerm: "",
   };
-
   const {
-    data,
-    pageNumber: currentPage,
-    pageSize: currentSize,
-    totalCount,
-    totalPages,
-  } = await getClients({
+    data = [],
+    pageNumber: currentPage = 0,
+    pageSize: currentSize = 10,
+    totalCount = 0,
+    totalPages = 0,
+  } = (await getClients({
     pageNumber,
     pageSize,
     searchTerm,
-  });
+  })) || {};
 
   return (
     <div className="flex justify-center w-3/5 m-5">

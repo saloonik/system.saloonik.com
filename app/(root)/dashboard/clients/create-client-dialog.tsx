@@ -33,7 +33,7 @@ export function CreateClientDialog() {
       if (!data.dateOfBirth) {
         data.dateOfBirth = null;
       }
-      await api.post<Client>("api/Clients/Add", data);
+      await api.post<Client>("Clients/Add", data);
     } catch (error) {
       console.error("Error creating client:", error);
     } finally {

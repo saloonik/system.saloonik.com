@@ -54,16 +54,14 @@ export default function Register() {
       if (status === 200) {
         Cookies.set("token", data.token, { expires: 7 });
         Cookies.set("refreshToken", data.refreshToken);
-        // Redirect to the dashboard or home page
       }
     } catch (err) {
       const errorResponse = (err as any)?.response;
       const apiError: AuthApiResponse = errorResponse?.data;
       setErrorTitle(apiError?.resultTitle);
-      if (apiError?.resultDescription.includes(","))
-        form.setError("root", {
-          message: apiError?.resultDescription,
-        });
+      form.setError("root", {
+        message: apiError?.resultDescription,
+      });
     }
   };
 

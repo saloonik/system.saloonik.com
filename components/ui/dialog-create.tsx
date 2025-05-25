@@ -50,7 +50,6 @@ export enum FieldInputType {
   Checkbox = "checkbox",
   Select = "select",
   Textarea = "textarea",
-  Calendar = "calendar",
 }
 
 export enum FieldWidth {
@@ -95,8 +94,6 @@ export function DialogCreate({
       (acc, field) => {
         if (field.type === "checkbox") {
           acc[field.name] = false;
-        } else if (field.type === "calendar") {
-          acc[field.name] = undefined;
         } else {
           acc[field.name] = "";
         }
@@ -115,6 +112,107 @@ export function DialogCreate({
       console.error("Error submitting form:", error);
     }
   }
+
+  const renderFormField = (field: FieldDefinition, fieldProps: any) => {
+    if (field.type === "checkbox") {
+      return (
+        <div className="flex items-center space-x-2 mt-1">
+          <Checkbox
+            checked={!!fieldProps.value}
+            onCheckedChange={fieldProps.onChange}
+            id={field.name}
+          />
+          <label
+            htmlFor={field.name}
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {field.label}
+          </label>
+        </div>
+      );
+    }
+
+    if (field.type === "select" && field.options) {
+      return (
+        <Select
+          onValueChange={fieldProps.onChange}
+          defaultValue={fieldProps.value}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={field.placeholder} />
+          </SelectTrigger>
+          <SelectContent>
+            {field.options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
+    }
+
+    if (field.type === "textarea") {
+      return (
+        <Textarea
+          placeholder={field.placeholder}
+          className="w-full min-h-[120px]"
+          {...fieldProps}
+        />
+      );
+    }
+
+    return (
+      <div className="relative w-full">
+        {field.icon && (
+          <div className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">
+            {field.icon}
+          </div>
+        )}
+        <Input
+          type={field.type || "text"}
+          placeholder={field.placeholder}
+          className={cn("w-full", field.icon && "pl-9")}
+          {...fieldProps}
+        />
+      </div>
+    );
+  };
+
+  // Helper function to render form fields with their proper layout
+  const renderFields = (fieldsToRender: FieldDefinition[]) => {
+    return fieldsToRender.map((field) => {
+      const widthClass =
+        field.width === FieldWidth.Half
+          ? "col-span-6"
+          : field.width === FieldWidth.Third
+            ? "col-span-4"
+            : "col-span-12";
+
+      return (
+        <FormField
+          key={field.name}
+          control={form.control}
+          name={field.name}
+          render={({ field: fieldProps }) => (
+            <FormItem
+              className={cn(
+                widthClass,
+                field.type === FieldInputType.Checkbox &&
+                  "flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4",
+              )}
+            >
+              {field.type !== FieldInputType.Checkbox && (
+                <FormLabel>{field.label}</FormLabel>
+              )}
+              <FormControl>{renderFormField(field, fieldProps)}</FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      );
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -140,277 +238,18 @@ export function DialogCreate({
                       {sectionName}
                     </h3>
                     <div className="grid grid-cols-12 gap-4">
-                      {fields
-                        .filter(
+                      {renderFields(
+                        fields.filter(
                           (field) => (field.section || "Inne") === sectionName,
-                        )
-                        .map((field) => {
-                          const widthClass =
-                            field.width === "half"
-                              ? "col-span-6"
-                              : field.width === "third"
-                                ? "col-span-4"
-                                : "col-span-12";
-
-                          return (
-                            <FormField
-                              key={field.name}
-                              control={form.control}
-                              name={field.name}
-                              render={({ field: fieldProps }) => (
-                                <FormItem
-                                  className={`${widthClass} ${field.type === "checkbox" ? "flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4" : ""}`}
-                                >
-                                  {field.type !== "checkbox" && (
-                                    <FormLabel>{field.label}</FormLabel>
-                                  )}
-                                  <FormControl>
-                                    {field.type === "checkbox" ? (
-                                      <div className="flex items-center space-x-2 mt-1">
-                                        <Checkbox
-                                          checked={!!fieldProps.value}
-                                          onCheckedChange={fieldProps.onChange}
-                                          id={field.name}
-                                        />
-                                        <label
-                                          htmlFor={field.name}
-                                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                        >
-                                          {field.label}
-                                        </label>
-                                      </div>
-                                    ) : field.type === "select" &&
-                                      field.options ? (
-                                      <Select
-                                        onValueChange={fieldProps.onChange}
-                                        defaultValue={fieldProps.value}
-                                      >
-                                        <SelectTrigger className="w-full">
-                                          <SelectValue
-                                            placeholder={field.placeholder}
-                                          />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {field.options.map((option) => (
-                                            <SelectItem
-                                              key={option.value}
-                                              value={option.value}
-                                            >
-                                              {option.label}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                    ) : field.type === "textarea" ? (
-                                      <Textarea
-                                        placeholder={field.placeholder}
-                                        className="w-full min-h-[120px]"
-                                        {...fieldProps}
-                                      />
-                                    ) : field.type === "date" ? (
-                                      <Popover>
-                                        <PopoverTrigger asChild>
-                                          <Button
-                                            variant={"outline"}
-                                            className={cn(
-                                              "w-full justify-start text-left font-normal",
-                                              !fieldProps.value &&
-                                                "text-muted-foreground",
-                                            )}
-                                          >
-                                            {field.icon && (
-                                              <div className="mr-2 h-4 w-4 text-gray-500">
-                                                {field.icon}
-                                              </div>
-                                            )}
-                                            {fieldProps.value ? (
-                                              format(
-                                                new Date(fieldProps.value),
-                                                "PPP",
-                                              )
-                                            ) : (
-                                              <span>
-                                                {field.placeholder ||
-                                                  "Wybierz datę"}
-                                              </span>
-                                            )}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                          </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0">
-                                          <Calendar
-                                            mode="single"
-                                            selected={
-                                              fieldProps.value
-                                                ? new Date(fieldProps.value)
-                                                : undefined
-                                            }
-                                            onSelect={(date) => {
-                                              fieldProps.onChange(
-                                                date
-                                                  ? format(date, "yyyy-MM-dd")
-                                                  : "",
-                                              );
-                                            }}
-                                            initialFocus
-                                          />
-                                        </PopoverContent>
-                                      </Popover>
-                                    ) : (
-                                      <div className="relative w-full">
-                                        {field.icon && (
-                                          <div className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">
-                                            {field.icon}
-                                          </div>
-                                        )}
-                                        <Input
-                                          type={field.type || "text"}
-                                          placeholder={field.placeholder}
-                                          className={`w-full ${field.icon ? "pl-9" : ""}`}
-                                          {...fieldProps}
-                                        />
-                                      </div>
-                                    )}
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          );
-                        })}
+                        ),
+                      )}
                     </div>
                   </div>
                 ));
               } else {
                 return (
                   <div className="grid grid-cols-12 gap-4">
-                    {fields.map((field) => {
-                      const widthClass =
-                        field.width === "half"
-                          ? "col-span-6"
-                          : field.width === "third"
-                            ? "col-span-4"
-                            : "col-span-12";
-
-                      return (
-                        <FormField
-                          key={field.name}
-                          control={form.control}
-                          name={field.name}
-                          render={({ field: fieldProps }) => (
-                            <FormItem
-                              className={`${widthClass} ${field.type === "checkbox" ? "flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4" : ""}`}
-                            >
-                              {field.type !== "checkbox" && (
-                                <FormLabel>{field.label}</FormLabel>
-                              )}
-                              <FormControl>
-                                {field.type === "checkbox" ? (
-                                  <div className="flex items-center space-x-2 mt-1">
-                                    <Checkbox
-                                      checked={!!fieldProps.value}
-                                      onCheckedChange={fieldProps.onChange}
-                                      id={field.name}
-                                    />
-                                    <label
-                                      htmlFor={field.name}
-                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                      {field.label}
-                                    </label>
-                                  </div>
-                                ) : field.type === "select" && field.options ? (
-                                  <Select
-                                    onValueChange={fieldProps.onChange}
-                                    defaultValue={fieldProps.value}
-                                  >
-                                    <SelectTrigger className="w-full">
-                                      <SelectValue
-                                        placeholder={field.placeholder}
-                                      />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {field.options.map((option) => (
-                                        <SelectItem
-                                          key={option.value}
-                                          value={option.value}
-                                        >
-                                          {option.label}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                ) : field.type === "date" ? (
-                                  <Popover>
-                                    <PopoverTrigger asChild>
-                                      <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                          "w-full justify-start text-left font-normal",
-                                          !fieldProps.value &&
-                                            "text-muted-foreground",
-                                        )}
-                                      >
-                                        {field.icon && (
-                                          <div className="mr-2 h-4 w-4 text-gray-500">
-                                            {field.icon}
-                                          </div>
-                                        )}
-                                        {fieldProps.value ? (
-                                          format(
-                                            new Date(fieldProps.value),
-                                            "PPP",
-                                          )
-                                        ) : (
-                                          <span>
-                                            {field.placeholder ||
-                                              "Wybierz datę"}
-                                          </span>
-                                        )}
-                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                      </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0">
-                                      <Calendar
-                                        mode="single"
-                                        selected={
-                                          fieldProps.value
-                                            ? new Date(fieldProps.value)
-                                            : undefined
-                                        }
-                                        onSelect={(date) => {
-                                          fieldProps.onChange(
-                                            date
-                                              ? format(date, "yyyy-MM-dd")
-                                              : "",
-                                          );
-                                        }}
-                                        initialFocus
-                                      />
-                                    </PopoverContent>
-                                  </Popover>
-                                ) : (
-                                  <div className="relative w-full">
-                                    {field.icon && (
-                                      <div className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">
-                                        {field.icon}
-                                      </div>
-                                    )}
-                                    <Input
-                                      type={field.type || "text"}
-                                      placeholder={field.placeholder}
-                                      className={`w-full ${field.icon ? "pl-9" : ""}`}
-                                      {...fieldProps}
-                                    />
-                                  </div>
-                                )}
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      );
-                    })}
+                    {renderFields(fields)}
                   </div>
                 );
               }
