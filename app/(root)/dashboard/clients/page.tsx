@@ -10,9 +10,13 @@ import { getClients } from "@/lib/data";
 export default async function Clients({
   searchParams,
 }: {
-  searchParams: { pageNumber: string; pageSize: string; searchTerm: string };
+  searchParams?: { pageNumber: string; pageSize: string; searchTerm: string };
 }) {
-  const { pageNumber, pageSize, searchTerm } = await searchParams;
+  const { pageNumber, pageSize, searchTerm } = (await searchParams) || {
+    pageNumber: "1",
+    pageSize: "10",
+    searchTerm: "",
+  };
 
   const {
     data,
